@@ -43,7 +43,7 @@ cfg-if = "1.0"
 pkg-config = "0.3.17"
 lua-src = { version = ">= 551.0.2, < 551.1.0", optional = true }
 luajit-src = { version = ">= 210.7.0, < 210.8.0", optional = true }
-luau0-src = { version = "0.22.0", git = "https://github.com/vivainio/luau-decimal-src-rs", rev = "25d81b877e3b1ad5ad9aa87d01f9dae42d5472ab", optional = true }
+luau0-src = { version = "0.22.0", git = "https://github.com/vivainio/luau-decimal-src-rs", rev = "d3fa88725ad3cec4904b4f35b43cc9b2637741e0", optional = true }
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(raw_dylib)'] }

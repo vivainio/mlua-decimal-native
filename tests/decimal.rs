@@ -101,3 +101,37 @@ fn decimal_serde_preserves_precision() -> Result<()> {
     assert_eq!(lua.from_value::<String>(value)?, expected);
     Ok(())
 }
+
+// The full VM conformance script covers rounding, overflow, parsing, large values,
+// mixed integer arithmetic, and bytecode loading. Isolate its integer feature flag.
+#[test]
+fn decimal_vm_conformance() -> Result<()> {
+    if std::env::var_os("MLUA_TEST_DECIMAL_CONFORMANCE").is_none() {
+        assert!(
+            std::process::Command::new(std::env::current_exe()?)
+                .args(["--exact", "decimal_vm_conformance"])
+                .env("MLUA_TEST_DECIMAL_CONFORMANCE", "1")
+                .status()?
+                .success()
+        );
+        return Ok(());
+    }
+    assert!(Lua::set_fflag("LuauIntegerType2", true).is_ok());
+    let lua = Lua::new();
+    // mlua's loadstring raises syntax errors; the VM conformance script expects
+    // the standalone runtime's nil/error pair instead.
+    lua.load(
+        r#"
+        local compile = loadstring
+        loadstring = function(...)
+            local ok, value = pcall(compile, ...)
+            if ok then return value end
+            return nil, tostring(value)
+        end
+    "#,
+    )
+    .exec()?;
+    let result: String = lua.load(include_str!("fixtures/decimal.luau")).eval()?;
+    assert_eq!(result, "OK");
+    Ok(())
+}

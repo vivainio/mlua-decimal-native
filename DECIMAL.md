@@ -11,8 +11,8 @@ mlua = { git = "https://github.com/vivainio/mlua-decimal-native", branch = "main
 Commit your application's `Cargo.lock` and run `cargo build --locked` in CI.
 For an immutable dependency declaration, replace `branch` with `rev` containing
 a tested commit from this branch. No sibling checkouts or system Luau are needed.
-A Rust toolchain and a C++ compiler supporting `__int128` (GCC or Clang on
-Linux/macOS) are required. Windows/MSVC is currently unsupported.
+A Rust toolchain and a C++ compiler are required: GCC or Clang on Linux/macOS,
+or Visual Studio Build Tools with the C++ workload on Windows/MSVC.
 
 The `mlua-sys` crate pins `luau-decimal-src-rs` to an exact Git revision so the
 compiler, VM, and bindings use compatible versions. If another dependency uses
@@ -42,6 +42,7 @@ strings; deserializing a string does not automatically create a native decimal.
 
 This replaces Luau's ABI, including its type tags. Do not link these bindings
 against stock Luau. The vendored VM and compiler must be updated together.
-The fork currently requires a C++ compiler supporting `__int128`.
+GCC/Clang use native `__int128`; MSVC uses portable two-word mantissas.
+`LUAU_CXXFLAGS=-DLUAU_DECIMAL_PORTABLE` forces the portable path for testing.
 
 Validation: `cargo test --features luau,serde --test decimal`.

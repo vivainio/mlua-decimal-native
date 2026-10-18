@@ -79,8 +79,10 @@ binding details.
 
 ## Builds and CI
 
-The decimal backend is tested on Linux and macOS with GCC or Clang. It needs a
-C++ compiler supporting `__int128`; Windows/MSVC is currently unsupported.
+The decimal backend supports Linux and macOS with GCC or Clang, and Windows
+with MSVC. Install a Rust toolchain and a C++ compiler (on Windows, Visual Studio
+Build Tools with the C++ workload). GCC/Clang use native `__int128`; MSVC uses
+portable two-word mantissas. CI tests all three platforms.
 Enable `luau` as shown above; the other Lua backends do not provide this native
 decimal type.
 
