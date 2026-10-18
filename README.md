@@ -10,7 +10,7 @@ Cargo package names remain `mlua`, `mlua-sys`, and `mlua_derive`.
 
 ```toml
 [dependencies]
-mlua = { git = "https://github.com/vivainio/mlua-decimal-native", branch = "decimal-integration", features = ["luau"] }
+mlua = { git = "https://github.com/vivainio/mlua-decimal-native", branch = "main", features = ["luau"] }
 ```
 
 Cargo fetches the pinned decimal Luau sources automatically. Commit `Cargo.lock`

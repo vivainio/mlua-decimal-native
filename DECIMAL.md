@@ -5,7 +5,7 @@ with one dependency; Cargo fetches the matching Luau sources automatically:
 
 ```toml
 [dependencies]
-mlua = { git = "https://github.com/vivainio/mlua-decimal-native", branch = "decimal-integration", features = ["luau"] }
+mlua = { git = "https://github.com/vivainio/mlua-decimal-native", branch = "main", features = ["luau"] }
 ```
 
 Commit your application's `Cargo.lock` and run `cargo build --locked` in CI.
