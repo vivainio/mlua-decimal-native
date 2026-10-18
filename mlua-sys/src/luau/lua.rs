@@ -66,14 +66,17 @@ pub const LUA_TBOOLEAN: c_int = 1;
 pub const LUA_TLIGHTUSERDATA: c_int = 2;
 pub const LUA_TNUMBER: c_int = 3;
 pub const LUA_TINTEGER: c_int = 4;
-pub const LUA_TVECTOR: c_int = 5;
+pub const LUA_TDECIMAL: c_int = 5;
+pub const LUA_TCLASS: c_int = 13;
+pub const LUA_TOBJECT: c_int = 14;
+pub const LUA_TVECTOR: c_int = 6;
 
-pub const LUA_TSTRING: c_int = 6;
-pub const LUA_TTABLE: c_int = 7;
-pub const LUA_TFUNCTION: c_int = 8;
-pub const LUA_TUSERDATA: c_int = 9;
-pub const LUA_TTHREAD: c_int = 10;
-pub const LUA_TBUFFER: c_int = 11;
+pub const LUA_TSTRING: c_int = 7;
+pub const LUA_TTABLE: c_int = 8;
+pub const LUA_TFUNCTION: c_int = 9;
+pub const LUA_TUSERDATA: c_int = 10;
+pub const LUA_TTHREAD: c_int = 11;
+pub const LUA_TBUFFER: c_int = 12;
 
 /// Guaranteed number of Lua stack slots available to a C function.
 pub const LUA_MINSTACK: c_int = 20;
@@ -181,6 +184,15 @@ unsafe extern "C-unwind" {
     // Push functions (C -> stack)
     //
     pub fn lua_pushnil(L: *mut lua_State);
+    pub fn lua_pushdecimal(L: *mut lua_State, negative: c_int, hi: u64, lo: u64, exponent: c_int);
+    pub fn lua_todecimal(
+        L: *mut lua_State,
+        idx: c_int,
+        negative: *mut c_int,
+        hi: *mut u64,
+        lo: *mut u64,
+        exponent: *mut c_int,
+    ) -> c_int;
     pub fn lua_pushnumber(L: *mut lua_State, n: lua_Number);
     #[link_name = "lua_pushinteger"]
     pub fn lua_pushinteger_(L: *mut lua_State, n: c_int);

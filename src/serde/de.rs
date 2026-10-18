@@ -214,6 +214,8 @@ impl<'de> serde::Deserializer<'de> for Deserializer {
             #[allow(clippy::useless_conversion)]
             Value::Number(n) => visitor.visit_f64(n.into()),
             #[cfg(feature = "luau")]
+            Value::Decimal(d) => visitor.visit_string(d.to_string()),
+            #[cfg(feature = "luau")]
             Value::Vector(_) => self.deserialize_seq(visitor),
             Value::String(s) => match s.to_str() {
                 Ok(s) => visitor.visit_str(&s),

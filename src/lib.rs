@@ -76,6 +76,8 @@ mod macros;
 
 mod buffer;
 mod conversion;
+#[cfg(any(feature = "luau", doc))]
+mod decimal;
 mod memory;
 mod multi;
 mod scope;
@@ -85,6 +87,8 @@ mod types;
 mod util;
 mod value;
 mod vector;
+#[cfg(any(feature = "luau", doc))]
+pub use crate::decimal::Decimal;
 
 pub mod chunk;
 pub mod debug;

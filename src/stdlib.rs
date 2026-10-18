@@ -78,6 +78,10 @@ impl StdLib {
     #[cfg_attr(docsrs, doc(cfg(feature = "luau")))]
     pub const INTEGER: StdLib = StdLib(1 << 11);
 
+    /// Native decimal arithmetic library.
+    #[cfg(any(feature = "luau", doc))]
+    pub const DECIMAL: StdLib = StdLib(1 << 13);
+
     /// [`jit`](http://luajit.org/ext_jit.html) library
     #[cfg(any(feature = "luajit", doc))]
     #[cfg_attr(docsrs, doc(cfg(feature = "luajit")))]

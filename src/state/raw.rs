@@ -852,6 +852,17 @@ impl RawLua {
             Value::Boolean(b) => ffi::lua_pushboolean(state, *b as c_int),
             Value::LightUserData(ud) => ffi::lua_pushlightuserdata(state, ud.0),
             Value::Integer(i) => ffi::lua_pushinteger(state, *i),
+            #[cfg(feature = "luau")]
+            Value::Decimal(d) => {
+                let magnitude = d.mantissa().unsigned_abs();
+                ffi::lua_pushdecimal(
+                    state,
+                    (d.mantissa() < 0) as c_int,
+                    (magnitude >> 64) as u64,
+                    magnitude as u64,
+                    -(d.scale() as c_int),
+                );
+            }
             Value::Number(n) => ffi::lua_pushnumber(state, *n),
             #[cfg(feature = "luau")]
             Value::Vector(v) => {
@@ -926,6 +937,20 @@ impl RawLua {
                     Some(i) if n.to_bits() == (i as crate::types::Number).to_bits() => Value::Integer(i),
                     _ => Value::Number(n),
                 }
+            }
+
+            #[cfg(feature = "luau")]
+            ffi::LUA_TDECIMAL => {
+                let (mut negative, mut hi, mut lo, mut exponent) = (0, 0, 0, 0);
+                ffi::lua_todecimal(state, idx, &mut negative, &mut hi, &mut lo, &mut exponent);
+                let magnitude = (((hi as u128) << 64) | lo as u128) as i128;
+                Value::Decimal(
+                    crate::Decimal::new(
+                        if negative != 0 { -magnitude } else { magnitude },
+                        (-exponent) as u32,
+                    )
+                    .expect("invalid native decimal"),
+                )
             }
 
             #[cfg(feature = "luau")]
@@ -1791,6 +1816,11 @@ unsafe fn load_std_libs(state: *mut ffi::lua_State, libs: StdLib) -> Result<()> 
     #[cfg(feature = "luau")]
     if libs.contains(StdLib::INTEGER) {
         requiref(state, ffi::LUA_INTLIBNAME, ffi::luaopen_integer, 1)?;
+    }
+
+    #[cfg(feature = "luau")]
+    if libs.contains(StdLib::DECIMAL) {
+        requiref(state, ffi::LUA_DECLIBNAME, ffi::luaopen_decimal, 1)?;
     }
 
     if libs.contains(StdLib::MATH) {

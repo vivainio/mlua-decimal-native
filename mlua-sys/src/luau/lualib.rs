@@ -14,6 +14,7 @@ pub const LUA_UTF8LIBNAME: *const c_char = cstr!("utf8");
 pub const LUA_MATHLIBNAME: *const c_char = cstr!("math");
 pub const LUA_DBLIBNAME: *const c_char = cstr!("debug");
 pub const LUA_VECLIBNAME: *const c_char = cstr!("vector");
+pub const LUA_DECLIBNAME: *const c_char = cstr!("decimal");
 pub const LUA_INTLIBNAME: *const c_char = cstr!("integer");
 
 unsafe extern "C-unwind" {
@@ -28,6 +29,7 @@ unsafe extern "C-unwind" {
     pub fn luaopen_math(L: *mut lua_State) -> c_int;
     pub fn luaopen_debug(L: *mut lua_State) -> c_int;
     pub fn luaopen_vector(L: *mut lua_State) -> c_int;
+    pub fn luaopen_decimal(L: *mut lua_State) -> c_int;
     pub fn luaopen_integer(L: *mut lua_State) -> c_int;
 
     // open all builtin libraries

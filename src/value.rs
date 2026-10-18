@@ -43,6 +43,9 @@ pub enum Value {
     Integer(Integer),
     /// A floating point number.
     Number(Number),
+    /// A native Luau decimal.
+    #[cfg(any(feature = "luau", doc))]
+    Decimal(crate::Decimal),
     /// A Luau vector.
     #[cfg(any(feature = "luau", doc))]
     #[cfg_attr(docsrs, doc(cfg(feature = "luau")))]
@@ -87,6 +90,8 @@ impl Value {
             Value::LightUserData(_) => "lightuserdata",
             Value::Integer(_) => "integer",
             Value::Number(_) => "number",
+            #[cfg(feature = "luau")]
+            Value::Decimal(_) => "decimal",
             #[cfg(feature = "luau")]
             Value::Vector(_) => "vector",
             Value::String(_) => "string",
@@ -165,6 +170,8 @@ impl Value {
             Value::LightUserData(ud) => Ok(format!("lightuserdata: {:p}", ud.0)),
             Value::Integer(i) => Ok(i.to_string()),
             Value::Number(n) => Ok(n.to_string()),
+            #[cfg(feature = "luau")]
+            Value::Decimal(d) => Ok(d.to_string()),
             #[cfg(feature = "luau")]
             Value::Vector(v) => Ok(v.to_string()),
             Value::String(s) => Ok(s.to_str()?.to_string()),
@@ -433,6 +440,21 @@ impl Value {
         }
     }
 
+    /// Returns the native Luau decimal, if present.
+    #[cfg(feature = "luau")]
+    pub fn as_decimal(&self) -> Option<crate::Decimal> {
+        match self {
+            Value::Decimal(d) => Some(*d),
+            _ => None,
+        }
+    }
+
+    /// Returns whether this is a native Luau decimal.
+    #[cfg(feature = "luau")]
+    pub fn is_decimal(&self) -> bool {
+        matches!(self, Value::Decimal(_))
+    }
+
     /// Cast the value to a [`Vector`].
     ///
     /// If the value is a [`Vector`], returns it or `None` otherwise.
@@ -539,6 +561,12 @@ impl Value {
             (Value::Number(a), Value::Number(b)) => a.partial_cmp(b).unwrap_or(Ordering::Equal),
             (Value::Integer(_) | Value::Number(_), _) => Ordering::Less,
             (_, Value::Integer(_) | Value::Number(_)) => Ordering::Greater,
+            #[cfg(feature = "luau")]
+            (Value::Decimal(a), Value::Decimal(b)) => a.cmp(b),
+            #[cfg(feature = "luau")]
+            (Value::Decimal(_), _) => Ordering::Less,
+            #[cfg(feature = "luau")]
+            (_, Value::Decimal(_)) => Ordering::Greater,
             // Vector (Luau)
             #[cfg(feature = "luau")]
             (Value::Vector(a), Value::Vector(b)) => a.partial_cmp(b).unwrap_or(Ordering::Equal),
@@ -565,6 +593,8 @@ impl Value {
             Value::LightUserData(ud) => write!(fmt, "lightuserdata: {:?}", ud.0),
             Value::Integer(i) => write!(fmt, "{i}"),
             Value::Number(n) => write!(fmt, "{n}"),
+            #[cfg(feature = "luau")]
+            Value::Decimal(d) => write!(fmt, "{d}"),
             #[cfg(feature = "luau")]
             Value::Vector(v) => write!(fmt, "{v}"),
             Value::String(s) => write!(fmt, "{s:?}"),
@@ -597,6 +627,8 @@ impl fmt::Debug for Value {
             Value::Integer(i) => write!(fmt, "Integer({i})"),
             Value::Number(n) => write!(fmt, "Number({n})"),
             #[cfg(feature = "luau")]
+            Value::Decimal(d) => write!(fmt, "Decimal({d})"),
+            #[cfg(feature = "luau")]
             Value::Vector(v) => write!(fmt, "{v:?}"),
             Value::String(s) => write!(fmt, "String({s:?})"),
             Value::Table(t) => write!(fmt, "{t:?}"),
@@ -617,6 +649,8 @@ impl PartialEq for Value {
             (Value::Nil, Value::Nil) => true,
             (Value::Boolean(a), Value::Boolean(b)) => a == b,
             (Value::LightUserData(a), Value::LightUserData(b)) => a == b,
+            #[cfg(feature = "luau")]
+            (Value::Decimal(a), Value::Decimal(b)) => a == b,
             (Value::Integer(a), Value::Integer(b)) => *a == *b,
             (Value::Integer(a), Value::Number(b)) | (Value::Number(b), Value::Integer(a)) => {
                 *a as Number == *b && Integer::from_f64(*b) == Some(*a)
@@ -765,6 +799,8 @@ impl Serialize for SerializableValue<'_> {
             #[allow(clippy::useless_conversion)]
             Value::Integer(i) => serializer.serialize_i64((*i).into()),
             Value::Number(n) => serializer.serialize_f64(*n),
+            #[cfg(feature = "luau")]
+            Value::Decimal(d) => serializer.collect_str(d),
             #[cfg(feature = "luau")]
             Value::Vector(v) => v.serialize(serializer),
             Value::String(s) => s.serialize(serializer),

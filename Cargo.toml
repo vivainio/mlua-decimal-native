@@ -4,7 +4,7 @@ version = "0.12.2" # remember to update mlua_derive
 authors = ["Aleksandr Orlenko <zxteam@pm.me>", "kyren <catherine@kyju.org>"]
 rust-version = "1.88"
 edition = "2024"
-repository = "https://github.com/mlua-rs/mlua"
+repository = "https://github.com/vivainio/mlua-decimal-native"
 documentation = "https://docs.rs/mlua"
 readme = "README.md"
 keywords = ["lua", "luajit", "luau", "async", "scripting"]
@@ -124,3 +124,7 @@ required-features = ["serde"]
 [[example]]
 name = "userdata"
 required-features = ["macros"]
+
+[[example]]
+name = "decimal"
+required-features = ["luau"]

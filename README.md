@@ -1,3 +1,24 @@
+# mlua-decimal-native
+
+Experimental mlua bindings for Luau's native decimal type.
+
+This fork adds `Decimal`, `Value::Decimal`, and exact Rust ↔ Luau conversions
+for [vivainio/luau](https://github.com/vivainio/luau). See [decimal integration](DECIMAL.md)
+for usage and current limitations. It uses the matching
+[luau-decimal-src-rs](https://github.com/vivainio/luau-decimal-src-rs) source crate.
+Cargo package names remain `mlua`, `mlua-sys`, and `mlua_derive`.
+
+```toml
+[dependencies]
+mlua = { git = "https://github.com/vivainio/mlua-decimal-native", branch = "decimal-integration", features = ["luau"] }
+```
+
+Cargo fetches the pinned decimal Luau sources automatically. Commit `Cargo.lock`
+and use `cargo build --locked` in CI. Linux/macOS with GCC or Clang are supported;
+the decimal VM requires `__int128` and does not currently support Windows/MSVC.
+
+The upstream mlua documentation follows below; its release badges refer to upstream.
+
 # mlua
 [![Build Status]][github-actions] [![Latest Version]][crates.io] [![API Documentation]][docs.rs] [![Coverage Status]][codecov.io] ![MSRV]
 

@@ -65,6 +65,9 @@ pub enum luau_BytecodeType {
     UserData,
     Vector,
     Buffer,
+    Integer,
+    Class,
+    Object,
 
     Any = 15,
 }

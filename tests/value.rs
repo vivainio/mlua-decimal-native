@@ -397,6 +397,8 @@ fn test_value_exhaustive_match() {
         Value::Integer(_) => {}
         Value::Number(_) => {}
         #[cfg(feature = "luau")]
+        Value::Decimal(_) => {}
+        #[cfg(feature = "luau")]
         Value::Vector(_) => {}
         Value::String(_) => {}
         Value::Table(_) => {}
